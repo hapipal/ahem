@@ -2,13 +2,10 @@
 
 // Load modules
 
-const Path = require('path');
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
 const Hapi = require('@hapi/hapi');
-const Vision = require('@hapi/vision');
-// const Closet = require('./closet');
-const HauteCouture = require('..');
+const Ahem = require('..');
 
 // Test shortcuts
 
@@ -17,138 +14,192 @@ const { expect } = Code;
 
 const internals = {};
 
-describe('HauteCouture', () => {
+describe('Ahem', () => {
 
-    describe('instance', () => {
+    describe('instance()', () => {
 
-        it('sandboxes plugin instantiation.', async () => {
+        it('instances a plugin.', async () => {
 
-            const server = Hapi.server();
-            const vision = await HauteCouture.instance(server, Vision, {
-                engines: { hbs: require('handlebars') },
-                path: `${__dirname}/closet/templates`
+            let srv;
+
+            const plugin = await Ahem.instance({
+                name: 'my-plugin',
+                register: (server, options) => {
+
+                    srv = server;
+
+                    expect(options).to.equal({});
+                }
             });
 
-            const result = await vision.render('welcome', {
-                context: { name: 'Jackie' }
-            });
-
-            console.log(result);
+            expect(plugin).to.exist();
+            expect(plugin).to.shallow.equal(srv);
         });
 
-        it('x.', async () => {
+        it('instances a plugin in { plugin } format.', async () => {
 
-            const server = Hapi.server();
-            const vision = await HauteCouture.instance(server, Vision, {}, {
-                controlled: false
+            let srv;
+
+            const plugin = await Ahem.instance({
+                other: 'junk',
+                plugin: {
+                    name: 'my-plugin',
+                    register: (server, options) => {
+
+                        srv = server;
+
+                        expect(options).to.equal({});
+                    }
+                }
             });
 
-            const vision = await HauteCouture.instance(Vision, {}, {
-                server: {}
-            });
+            expect(plugin).to.exist();
+            expect(plugin).to.shallow.equal(srv);
         });
 
-        it('x.', async () => {
+        it('instances a plugin with options.', async () => {
 
-            // Fails
+            let srv;
 
-            const vision = await HauteCouture.instance(Vision, {}, {
+            const plugin = await Ahem.instance({
+                name: 'my-plugin',
+                register: (server, options) => {
+
+                    srv = server;
+
+                    expect(options).to.equal({
+                        some: 'options'
+                    });
+                }
+            }, {
+                some: 'options'
+            });
+
+            expect(plugin).to.exist();
+            expect(plugin).to.shallow.equal(srv);
+        });
+
+        it('instances a plugin with options and registration options.', async () => {
+
+            let srv;
+
+            const plugin = await Ahem.instance({
+                name: 'my-plugin',
+                register: (server, options) => {
+
+                    srv = server;
+
+                    expect(options).to.equal({
+                        some: 'options'
+                    });
+
+                    expect(server.realm.modifiers.route.prefix).to.equal('/x');
+                }
+            }, {
+                options: {
+                    some: 'options'
+                },
+                routes: {
+                    prefix: '/x'
+                }
+            });
+
+            expect(plugin).to.exist();
+            expect(plugin).to.shallow.equal(srv);
+        });
+
+        it('fails when using compose.controlled without a primary server.', async () => {
+
+            const pluginPromise = Ahem.instance({
+                name: 'my-plugin',
+                register: () => {}
+            }, null, {
                 controlled: true
             });
 
-            const server = Hapi.server();
-            const vision = await HauteCouture.instance(server, Vision, {}, {
-                server: {}, // We will not be creating a server
-                controlled: false
-            });
-
-            // When server is not a root server
-            const vision = await HauteCouture.instance(server, Vision, {}, {
-                decorateRoot: true
-            });
+            await expect(pluginPromise).to.reject('A server must be specified when compose.controlled is true.');
         });
 
-        it('x.', async () => {
+        it('registers additional plugins using the composer.register option for a single plugin.', async () => {
 
-            const server = Hapi.server();
-            const vision = await HauteCouture.instance(Vision, {
-                options: { random: 'thing' },
-                routes: { prefix: '/a' }
-            });
+            let srv;
 
-            const vision = await HauteCouture.instance(Vision, {
-                random: 'thing'
-            });
-        });
+            const plugin = await Ahem.instance({
+                name: 'my-plugin',
+                register: (server) => {
 
-        it('x.', async () => {
+                    srv = server;
 
-            const vision = await HauteCouture.instance(Vision, {
-                random: 'thing'
-            }, {
-                server: { cors: true },
-                register: [{
-                    plugin: Inert,
-                    options: {}
-                }]
-            });
-        });
-
-        it('x.', async () => {
-
-            const Plugin = class {
-
-                register() {
-
+                    expect(server.registrations).to.only.include(['my-plugin', 'some-dependency']);
                 }
-
-                static get attributes() {
-
-                    return {
-                        name: 'plugin'
-                    };
+            }, null, {
+                register: {
+                    plugins: {
+                        name: 'some-dependency',
+                        register: () => null
+                    }
                 }
-            };
-
-            const vision = await HauteCouture.instance(Vision, {
-                random: 'thing'
-            }, {
-                server: { cors: true },
-                register: [{
-                    plugin: Inert,
-                    options: {}
-                }]
             });
+
+            expect(plugin).to.exist();
+            expect(plugin).to.shallow.equal(srv);
+        });
+
+        it('registers additional plugins using the composer.register option for a single plugin.', async () => {
+
+            let srv;
+
+            const plugin = await Ahem.instance({
+                name: 'my-plugin',
+                register: (server) => {
+
+                    srv = server;
+
+                    expect(server.registrations).to.only.include(['my-plugin', 'some-dependency', 'some-other-dependency']);
+                    expect(server.realm.modifiers.route.prefix).to.not.exist();
+                }
+            }, null, {
+                register: {
+                    plugins: [
+                        {
+                            plugin: {
+                                name: 'some-dependency',
+                                register: (server, options) => {
+
+                                    expect(options).to.equal({
+                                        some: 'options'
+                                    });
+
+                                    expect(server.realm.modifiers.route.prefix).to.equal('/x');
+                                }
+                            },
+                            options: {
+                                some: 'options'
+                            }
+                        },
+                        {
+                            name: 'some-other-dependency',
+                            register: (server) => {
+
+                                expect(server.realm.modifiers.route.prefix).to.equal('/x');
+                            }
+                        }
+                    ],
+                    options: {
+                        routes: {
+                            prefix: '/x'
+                        }
+                    }
+                }
+            });
+
+            expect(plugin).to.exist();
+            expect(plugin).to.shallow.equal(srv);
         });
     });
+
+    describe('plugin', () => {
+
+        it('x.', () => {});
+    });
 });
-
-// module.exports = async (server) => {
-
-//     // const { initialize } = Schmervice.createService(server)
-
-//     // let vision;
-
-//     // initialize(async () => {
-
-//     //     vision = await HauteCouture.instance(server, Vision, {
-//     //         engines: { hbs: require('handlebars') },
-//     //         path: `${__dirname}/closet/templates`
-//     //     });
-
-//     //     await vision.initialize();
-//     // });
-
-//     const vision = await HauteCouture.instance(server, Vision, {
-//         engines: { hbs: require('handlebars') },
-//         path: `${__dirname}/closet/templates`
-//     });
-
-//     return {
-//         name: vision.realm.plugin,
-//         static get service() {
-
-//             return vision;
-//         }
-//     };
-// };

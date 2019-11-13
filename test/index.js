@@ -18,6 +18,13 @@ describe('Ahem', () => {
 
     describe('instance()', () => {
 
+        // A little guide behavioral guide to ahem:
+        //
+        // server    x controlled      = control-by:server  [and] register-to:new-server
+        // server    x not-controlled  = control-by:n/a     [and] register-to:server (no server options allowed)
+        // no-server x controlled      = (not-allowed)
+        // no-server x not-controlled  = control-by:n/a     [and] register-to:new-server
+
         it('instances a plugin.', async () => {
 
             let srv;
@@ -251,6 +258,46 @@ describe('Ahem', () => {
             expect(root.app).to.not.equal({ some: 'value' });
         });
 
+        it('instances a plugin created with compose.server options, controlled by a root server.', async () => {
+
+            let srv;
+
+            const root = Hapi.server();
+            const plugin = await Ahem.instance(root, {
+                name: 'my-plugin',
+                register: (server) => {
+
+                    srv = server;
+
+                    server.ext('onPreStart', () => {
+
+                        server.app.some = 'value';
+                    });
+                }
+            }, null, {
+                server: {
+                    app: {
+                        some: 'value'
+                    }
+                }
+            });
+
+            expect(plugin).to.exist();
+            expect(plugin).to.shallow.equal(srv);
+
+            expect(plugin).to.not.shallow.equal(root);
+            expect(root.registrations).to.not.include('my-plugin');
+            expect(plugin.realm.parent).to.not.shallow.equal(root.realm);
+
+            expect(plugin.settings.app).to.equal({ some: 'value' });
+            expect(root.settings.app).to.not.equal({ some: 'value' });
+
+            expect(plugin.app).to.equal({});
+            await root.initialize();
+            expect(plugin.app).to.equal({ some: 'value' });
+            expect(root.app).to.not.equal({ some: 'value' });
+        });
+
         it('instances a plugin by a root server via registration when compose.controlled is false.', async () => {
 
             let srv;
@@ -281,13 +328,30 @@ describe('Ahem', () => {
             expect(plugin).to.shallow.equal(srv);
 
             expect(plugin).to.not.shallow.equal(root);
-            expect(root.registrations).to.include(['my-plugin', 'some-dependency']);
+            expect(root.registrations).to.only.include(['my-plugin', 'some-dependency']);
             expect(plugin.realm.parent).to.shallow.equal(root.realm);
 
             expect(plugin.app).to.equal({});
             await root.initialize();
             expect(plugin.app).to.equal({ some: 'value' });
             expect(root.app).to.equal({ some: 'value' });
+        });
+
+        it('fails when using compose.server options and passing a root server while compose.controlled is false.', async () => {
+
+            const pluginPromise = Ahem.instance(Hapi.server(), {
+                name: 'my-plugin',
+                register: () => null
+            }, null, {
+                controlled: false,
+                server: {
+                    app: {
+                        some: 'value'
+                    }
+                }
+            });
+
+            await expect(pluginPromise).to.reject('When a server is specified but compose.controlled is false, compose.server options are not allowed, as a new server will not be created.');
         });
     });
 

@@ -353,6 +353,170 @@ describe('Ahem', () => {
 
             await expect(pluginPromise).to.reject('When a server is specified but compose.controlled is false, compose.server options are not allowed, as a new server will not be created.');
         });
+
+        it('decorates the instance\'s root server by default when controlled.', async () => {
+
+            const root = Hapi.server();
+            const plugin = await Ahem.instance(root, {
+                name: 'my-plugin',
+                register: (srv) => {
+
+                    expect(srv.root).to.not.exist();
+                }
+            }, null, {
+                controlled: true
+            });
+
+            expect(root.decorations.server).to.not.contain('root');
+            expect(plugin.decorations.server).to.contain('root');
+            expect(plugin.root.realm).to.shallow.equal(plugin.realm.parent);
+        });
+
+        it('decorates the instance\'s root server by default when controlled by a passed server.', async () => {
+
+            const server = Hapi.server();
+            const plugin = await Ahem.instance(server, {
+                name: 'my-plugin',
+                register: (srv) => {
+
+                    expect(srv.root).to.not.exist();
+                }
+            }, null, {
+                controlled: true
+            });
+
+            expect(server.decorations.server).to.not.contain('root');
+            expect(plugin.decorations.server).to.contain('root');
+            expect(plugin.root.realm).to.shallow.equal(plugin.realm.parent);
+        });
+
+        it('decorates the instance\'s root server by default when not passed a server.', async () => {
+
+            const plugin = await Ahem.instance({
+                name: 'my-plugin',
+                register: (srv) => {
+
+                    expect(srv.root).to.not.exist();
+                }
+            });
+
+            expect(plugin.decorations.server).to.contain('root');
+            expect(plugin.root.realm).to.shallow.equal(plugin.realm.parent);
+        });
+
+        it('disables root server decoration by setting compose.decorateRoot to false.', async () => {
+
+            const server = Hapi.server();
+            const plugin1 = await Ahem.instance(server, {
+                name: 'my-plugin',
+                register: () => null
+            }, null, {
+                controlled: true,
+                decorateRoot: false
+            });
+
+            expect(server.decorations.server).to.not.contain('root');
+            expect(plugin1.decorations.server).to.not.contain('root');
+
+            const plugin2 = await Ahem.instance({
+                name: 'my-plugin',
+                register: () => null
+            }, null, {
+                decorateRoot: false
+            });
+
+            expect(plugin2.decorations.server).to.not.contain('root');
+        });
+
+        it('does not use compose.decorateRoot by default when passed a non-controlling, non-root server.', async () => {
+
+            const server = await Ahem.instance({
+                name: 'non-root-server',
+                register: () => null
+            }, null, {
+                decorateRoot: false
+            });
+
+            const plugin = await Ahem.instance(server, {
+                name: 'my-plugin',
+                register: (srv) => {
+
+                    expect(srv.root).to.not.exist();
+                }
+            }, null, {
+                controlled: false
+            });
+
+            expect(plugin.decorations.server).to.not.contain('root');
+        });
+
+        it('fails when using compose.decorateRoot when passed a non-controlling, non-root server.', async () => {
+
+            const server = await Ahem.instance({
+                name: 'non-root-server',
+                register: () => null
+            }, null, {
+                decorateRoot: false
+            });
+
+            const pluginPromise = Ahem.instance(server, {
+                name: 'my-plugin',
+                register: (srv) => {
+
+                    expect(srv.root).to.not.exist();
+                }
+            }, null, {
+                controlled: false,
+                decorateRoot: true
+            });
+
+            await expect(pluginPromise).to.reject('Cannot use compose.decorateRoot option without access to a root server.');
+        });
+
+        it('doesn\'t decorate root server when using compose.decorateRoot and the decoration has already been set.', async () => {
+
+            const root = Hapi.server();
+
+            const plugin1 = await Ahem.instance(root, {
+                name: 'my-plugin1',
+                register: () => null
+            }, null, {
+                controlled: false,
+                decorateRoot: true
+            });
+
+            expect(root.root).to.shallow.equal(root);
+            expect(plugin1.root).to.shallow.equal(root);
+
+            // Decoration skipped the second time, otherwise hapi would throw.
+
+            const plugin2 = await Ahem.instance(root, {
+                name: 'my-plugin2',
+                register: () => null
+            }, null, {
+                controlled: false,
+                decorateRoot: true
+            });
+
+            expect(root.root).to.shallow.equal(root);
+            expect(plugin2.root).to.shallow.equal(root);
+        });
+
+        it('fails when using compose.decorateRoot and there\'s already a different root decoration.', async () => {
+
+            const root = Hapi.server();
+            root.decorate('server', 'root', null);
+
+            const pluginPromise = Ahem.instance(root, {
+                name: 'my-plugin1',
+                register: () => null
+            }, null, {
+                controlled: false,
+                decorateRoot: true
+            });
+
+            await expect(pluginPromise).to.reject('Cannot use compose.decorateRoot on a server that already has a different root decoration.');
+        });
     });
 
     describe('plugin', () => {

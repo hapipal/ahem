@@ -521,6 +521,164 @@ describe('Ahem', () => {
 
     describe('plugin', () => {
 
-        it('x.', () => {});
+        it('adds the instance() server decoration.', async () => {
+
+            const server = Hapi.server();
+
+            await server.register(Ahem);
+
+            expect(server.registrations).to.only.include('ahem');
+            expect(server.decorations.server).to.only.contain('instance');
+        });
+
+        it('can be registered several times.', async () => {
+
+            const server = Hapi.server();
+
+            await server.register(Ahem);
+
+            await expect(server.register(Ahem)).to.not.reject();
+        });
+
+        describe('instance() server decoration', () => {
+
+            it('instances a plugin controlled by a root server.', async () => {
+
+                let srv;
+
+                const root = Hapi.server();
+                const plugin = await Ahem.instance(root, {
+                    name: 'my-plugin',
+                    register: (server) => {
+
+                        srv = server;
+
+                        server.ext('onPreStart', () => {
+
+                            server.app.some = 'value';
+                        });
+                    }
+                }, {
+                    some: 'option'
+                });
+
+                expect(plugin).to.exist();
+                expect(plugin).to.shallow.equal(srv);
+
+                expect(plugin.realm.pluginOptions).to.equal({ some: 'option' });
+
+                expect(plugin).to.not.shallow.equal(root);
+                expect(root.registrations).to.not.include('my-plugin');
+                expect(plugin.realm.parent).to.not.shallow.equal(root.realm);
+
+                expect(plugin.app).to.equal({});
+                await root.initialize();
+                expect(plugin.app).to.equal({ some: 'value' });
+                expect(root.app).to.not.equal({ some: 'value' });
+            });
+
+            it('instances a plugin created with compose.server options, controlled by a root server.', async () => {
+
+                let srv;
+
+                const root = Hapi.server();
+                await root.register(Ahem);
+
+                const plugin = await root.instance({
+                    name: 'my-plugin',
+                    register: (server) => {
+
+                        srv = server;
+
+                        server.ext('onPreStart', () => {
+
+                            server.app.some = 'value';
+                        });
+                    }
+                }, null, {
+                    server: {
+                        app: {
+                            some: 'value'
+                        }
+                    }
+                });
+
+                expect(plugin).to.exist();
+                expect(plugin).to.shallow.equal(srv);
+
+                expect(plugin).to.not.shallow.equal(root);
+                expect(root.registrations).to.not.include('my-plugin');
+                expect(plugin.realm.parent).to.not.shallow.equal(root.realm);
+
+                expect(plugin.settings.app).to.equal({ some: 'value' });
+                expect(root.settings.app).to.not.equal({ some: 'value' });
+
+                expect(plugin.app).to.equal({});
+                await root.initialize();
+                expect(plugin.app).to.equal({ some: 'value' });
+                expect(root.app).to.not.equal({ some: 'value' });
+            });
+
+            it('instances a plugin by a root server via registration when compose.controlled is false.', async () => {
+
+                let srv;
+
+                const root = Hapi.server();
+                await root.register(Ahem);
+
+                const plugin = await root.instance({
+                    name: 'my-plugin',
+                    register: (server) => {
+
+                        srv = server;
+
+                        server.ext('onPreStart', () => {
+
+                            server.app.some = 'value';
+                        });
+                    }
+                }, null, {
+                    controlled: false,
+                    register: {
+                        plugins: {
+                            name: 'some-dependency',
+                            register: () => null
+                        }
+                    }
+                });
+
+                expect(plugin).to.exist();
+                expect(plugin).to.shallow.equal(srv);
+
+                expect(plugin).to.not.shallow.equal(root);
+                expect(root.registrations).to.only.include(['ahem', 'my-plugin', 'some-dependency']);
+                expect(plugin.realm.parent).to.shallow.equal(root.realm);
+
+                expect(plugin.app).to.equal({});
+                await root.initialize();
+                expect(plugin.app).to.equal({ some: 'value' });
+                expect(root.app).to.equal({ some: 'value' });
+            });
+
+            it('decorates the instance\'s root server by default when controlled.', async () => {
+
+                const root = Hapi.server();
+                await root.register(Ahem);
+
+                const plugin = await root.instance({
+                    name: 'my-plugin',
+                    register: (srv) => {
+
+                        expect(srv.root).to.not.exist();
+                    }
+                }, null, {
+                    controlled: true
+                });
+
+                expect(root.decorations.server).to.not.contain('root');
+                expect(plugin.decorations.server).to.contain('root');
+                expect(plugin.root.realm).to.shallow.equal(plugin.realm.parent);
+            });
+        });
     });
 });

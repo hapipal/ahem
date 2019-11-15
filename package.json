@@ -19,10 +19,15 @@
   },
   "keywords": [
     "hapi",
+    "tool",
     "utility",
-    "performance",
-    "convenience",
-    "tools"
+    "plugin",
+    "plugins",
+    "library",
+    "compose",
+    "composition",
+    "instance",
+    "testing"
   ],
   "author": "Devin Ivy <devin@bigroomstudios.com>",
   "license": "MIT",

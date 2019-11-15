@@ -1,6 +1,6 @@
 {
   "name": "ahem",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "hapi plugins as libraries",
   "main": "lib/index.js",
   "engines": {

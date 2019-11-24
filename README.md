@@ -9,6 +9,10 @@ Lead Maintainer - [Devin Ivy](https://github.com/devinivy)
 
 ## Usage
 > See also the [API Reference](API.md)
+>
+> **Note**
+>
+> Ahem is intended for use with hapi v17+ and nodejs v10+.  Ensure you've installed @hapi/hapi within your project.
 
 Ahem's purpose is to encourage new possibilites for hapi plugin composition and portability.  It's a small tool that offers only subtly different functionality from [glue](https://github.com/hapijs/glue); but unlike glue, ahem's API is designed to strongly reinforce the perspective of hapi plugins as being instantiable general-purpose libraries, and not just web servers.
 

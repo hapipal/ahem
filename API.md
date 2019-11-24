@@ -20,7 +20,7 @@ Returns an instance of `plugin`, i.e. a [plugin-server](#plugin-server), where `
    - `compose.controlled` - when a `server` is specified but this is set to `false`, `plugin` will be registered directly to `server`.  By default `plugin` will be instanced on a separate server, but [controlled](https://hapi.dev/api/#-servercontrolserver) by `server`, meaning that it's tied to `server`'s initialize/start/stop lifecycle.
    - `compose.initialize` - may be set to `true` or `false` to determine whether to [initialize](https://hapi.dev/api/#-await-serverinitialize) the plugin instance.  In a controlled situation (per `compose.controlled`) this option defaults to `false`; when set to `true`, `server` will be initialized (in turn the plugin instance is also intialized).  In a non-controlled situation this option defaults to `true`; when set to `false`, the returned plugin instance will not be initialized.
    - `compose.decorateRoot` - determines whether or not the returned plugin instance should have a `root` [decoration](https://hapi.dev/api/#-serverdecoratetype-property-method-options) that references the root server to which it is registered.  Defaults to `true` unless `server` is specified but `compose.controlled` is `false`.
-   - `compose.decorateController` - determines whether or not the returned plugin instance should have a `controlled` [decoration](https://hapi.dev/api/#-serverdecoratetype-property-method-options) that references the controlling `server`.  Defaults to `true` when in a controlled situation (per `compose.controlled`).
+   - `compose.decorateController` - determines whether or not the returned plugin instance should have a `controller` [decoration](https://hapi.dev/api/#-serverdecoratetype-property-method-options) that references the controlling `server`.  Defaults to `true` when in a controlled situation (per `compose.controlled`).
 
 #### Example
 
@@ -76,7 +76,7 @@ const MyPlugin = require('./my-plugin');
 
     // Your plugin can be used without explicitly utilizing hapi or ahem:
 
-    const myPlugin = await MyPlugin.create({/* options */});
+    const app = await MyPlugin.create({/* options */});
 
     // Or it can be registered normally as a hapi plugin:
 

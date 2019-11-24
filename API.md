@@ -15,12 +15,12 @@ Returns an instance of `plugin`, i.e. a [plugin-server](#plugin-server), where `
  - `plugin` - a [hapi plugin](https://hapi.dev/api/#plugins).
  - `options` - plugin options for `plugin`.
  - `compose` - options related to the composition of `server`, `plugin`, and the returned plugin instance.
-   - `compose.server` - hapi [server options](https://hapi.dev/api/#server.options).  These options will be used to create the root server for `plugin` live on.  Note that this cannot be set when `server` is passed but `compose.controlled` is `false`: in that case `plugin` is registered directly to `server`, and an additional hapi server will not be created.
+   - `compose.server` - hapi [server options](https://hapi.dev/api/#server.options).  These options will be used to create the root server for `plugin` to live on.  Note that this cannot be set when `server` is passed but `compose.controlled` is `false`: in that case `plugin` is registered directly to `server`, and an additional hapi server will not be created.
    - `compose.register` - additional plugins to register to the same server as `plugin`, usually to fulfill `plugin`'s dependencies.  This may take the shape `{ plugins, options }` or just `plugins`, where `plugins` and `options` are defined as the arguments to [`server.register(plugins, [options])`](https://hapi.dev/api/#-await-serverregisterplugins-options).
-   - `compose.controlled` - when a `server` is specified but this is set to `false`, `plugin` will be registered directly to `server`.  Otherwise `plugin` will be instanced on a different server, but [controlled](https://hapi.dev/api/#-servercontrolserver) by `server`, meaning that it's tied to `server`'s initialize/start/stop lifecycle.
+   - `compose.controlled` - when a `server` is specified but this is set to `false`, `plugin` will be registered directly to `server`.  By default `plugin` will be instanced on a separate server, but [controlled](https://hapi.dev/api/#-servercontrolserver) by `server`, meaning that it's tied to `server`'s initialize/start/stop lifecycle.
    - `compose.initialize` - may be set to `true` or `false` to determine whether to [initialize](https://hapi.dev/api/#-await-serverinitialize) the plugin instance.  In a controlled situation (per `compose.controlled`) this option defaults to `false`; when set to `true`, `server` will be initialized (in turn the plugin instance is also intialized).  In a non-controlled situation this option defaults to `true`; when set to `false`, the returned plugin instance will not be initialized.
-   - `compose.decorateRoot` - determines whether or not the returned plugin instance should have a `root` decoration that references the root server to which it is registered.  Defaults to `true` unless `server` is specified but `compose.controlled` is `false`.
-   - `compose.decorateController` - determines whether or not the returned plugin instance should have a `controlled` decoration that references the controlling `server`.  Defaults to `true` when in a controlled situation (per `compose.controlled`).
+   - `compose.decorateRoot` - determines whether or not the returned plugin instance should have a `root` [decoration](https://hapi.dev/api/#-serverdecoratetype-property-method-options) that references the root server to which it is registered.  Defaults to `true` unless `server` is specified but `compose.controlled` is `false`.
+   - `compose.decorateController` - determines whether or not the returned plugin instance should have a `controlled` [decoration](https://hapi.dev/api/#-serverdecoratetype-property-method-options) that references the controlling `server`.  Defaults to `true` when in a controlled situation (per `compose.controlled`).
 
 #### Example
 
@@ -90,7 +90,7 @@ const MyPlugin = require('./my-plugin');
 ```
 
 ## The hapi plugin
-The purpose of this plugin is to expose the functionality of [`Ahem.instance()`]((#await-aheminstanceserver-plugin-options-compose)) as [a server decoration](#await-serverinstaneplugin-options-compose).
+The purpose of this plugin is to expose the functionality of [`Ahem.instance()`](#await-aheminstanceserver-plugin-options-compose) as [a server decoration](#await-serverinstanceplugin-options-compose).
 
 ### Registration
 Ahem may be registered multiple times—it should be registered in any plugin that would like to use any of its features.  It takes no plugin options.
@@ -132,7 +132,7 @@ const App = require('./app');
 ### Plugin-server
 
 ```js
-// This is hapi plugin
+// This is a hapi plugin
 exports.plugin = {
     name: 'my-plugin',
     register(server, options) {

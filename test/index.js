@@ -4,17 +4,22 @@
 
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
-const Hapi = require('@hapi/hapi');
+const Somever = require('@hapi/somever');
+const InternalHapi = require('@hapi/hapi');
 const Ahem = require('..');
+
+const Hapi = Somever.match(process.version, '>=12') ? require('@hapi/hapi-19') : require('@hapi/hapi');
 
 // Test shortcuts
 
-const { describe, it } = exports.lab = Lab.script();
+const { describe, it, before, after } = exports.lab = Lab.script();
 const { expect } = Code;
 
-const internals = {};
-
 describe('Ahem', () => {
+
+    before(() => Ahem._setHapi(Hapi));
+
+    after(() => Ahem._setHapi(InternalHapi));
 
     describe('instance()', () => {
 

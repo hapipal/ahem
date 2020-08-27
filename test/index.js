@@ -8,7 +8,7 @@ const Somever = require('@hapi/somever');
 const InternalHapi = require('@hapi/hapi');
 const Ahem = require('..');
 
-const Hapi = Somever.match(process.version, '>=12') ? require('@hapi/hapi-19') : require('@hapi/hapi');
+const Hapi = Somever.match(process.version, '>=12') ? require('@hapi/hapi-20') : require('@hapi/hapi');
 
 // Test shortcuts
 

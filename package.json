@@ -1,16 +1,16 @@
 {
-  "name": "ahem",
+  "name": "@hapipal/ahem",
   "version": "1.2.0",
   "description": "hapi plugins as libraries",
   "main": "lib/index.js",
   "engines": {
-    "node": ">=10.x.x"
+    "node": ">=12"
   },
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "lab -a @hapi/code -t 100 -L -I \"FinalizationRegistry,WeakRef\"",
+    "test": "lab -a @hapi/code -t 100 -L",
     "coveralls": "lab -r lcov | coveralls"
   },
   "repository": {
@@ -36,17 +36,15 @@
   },
   "homepage": "https://github.com/hapipal/ahem#readme",
   "dependencies": {
-    "@hapi/hoek": "8.x.x"
+    "@hapi/hoek": "9.x.x"
   },
   "peerDependencies": {
-    "@hapi/hapi": ">=17 <21"
+    "@hapi/hapi": ">=19 <21"
   },
   "devDependencies": {
-    "@hapi/code": "7.x.x",
-    "@hapi/hapi": "18.x.x",
-    "@hapi/hapi-20": "npm:@hapi/hapi@20",
-    "@hapi/lab": "21.x.x",
-    "@hapi/somever": "2.x.x",
+    "@hapi/code": "8.x.x",
+    "@hapi/hapi": "20.x.x",
+    "@hapi/lab": "24.x.x",
     "coveralls": "3.x.x"
   }
 }

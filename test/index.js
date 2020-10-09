@@ -4,22 +4,15 @@
 
 const Lab = require('@hapi/lab');
 const Code = require('@hapi/code');
-const Somever = require('@hapi/somever');
-const InternalHapi = require('@hapi/hapi');
+const Hapi = require('@hapi/hapi');
 const Ahem = require('..');
-
-const Hapi = Somever.match(process.version, '>=12') ? require('@hapi/hapi-20') : require('@hapi/hapi');
 
 // Test shortcuts
 
-const { describe, it, before, after } = exports.lab = Lab.script();
+const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
 
 describe('Ahem', () => {
-
-    before(() => Ahem._setHapi(Hapi));
-
-    after(() => Ahem._setHapi(InternalHapi));
 
     describe('instance()', () => {
 
@@ -673,7 +666,7 @@ describe('Ahem', () => {
 
             await server.register(Ahem);
 
-            expect(server.registrations).to.only.include('ahem');
+            expect(server.registrations).to.only.include('@hapipal/ahem');
             expect(server.decorations.server).to.only.contain('instance');
         });
 
@@ -797,7 +790,7 @@ describe('Ahem', () => {
                 expect(plugin).to.shallow.equal(srv);
 
                 expect(plugin).to.not.shallow.equal(root);
-                expect(root.registrations).to.only.include(['ahem', 'my-plugin', 'some-dependency']);
+                expect(root.registrations).to.only.include(['@hapipal/ahem', 'my-plugin', 'some-dependency']);
                 expect(plugin.realm.parent).to.shallow.equal(root.realm);
 
                 expect(plugin.app).to.equal({});

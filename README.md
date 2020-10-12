@@ -23,10 +23,10 @@ Ahem has applications in building non-server projects using hapi, creating serve
 The most basic usage of ahem is to instance a plugin with some plugin options.  Here we treat vision as an adapter-based templating library rather than as a hapi plugin.
 
 ```js
-// npm install ahem @hapi/hapi @hapi/vision handlebars
+// npm install @hapipal/ahem @hapi/hapi @hapi/vision handlebars
 const Vision = require('@hapi/vision');
 const Handlebars = require('handlebars');
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 
 // Before continuing, create a template:
 // mkdir templates && echo 'Hello, {{name}}!' > templates/hello.hbs
@@ -50,9 +50,9 @@ const Ahem = require('ahem');
 If your application has external plugin dependencies then you can specify those using the `register` option.
 
 ```js
-// npm install ahem @hapi/hapi schwifty knex sqlite3
-const Schwifty = require('schwifty');
-const Ahem = require('ahem');
+// npm install @hapipal/ahem @hapi/hapi @hapipal/schwifty knex sqlite3
+const Schwifty = require('@hapipal/schwifty');
+const Ahem = require('@hapipal/ahem');
 const App = require('./app');
 
 // Below assumes your application plugin
@@ -90,9 +90,9 @@ const App = require('./app');
 You might want to use one of your application plugins within a separate hapi project or deployment.  In this case you usually want the instance of your application to be "tied" to the lifecycle of the primary hapi server of that project: when you initialize/start/stop the primary server you would like your application instance to do the same.  In hapi jargon you want your application to be "controlled" by that server (see [`server.control()`](https://hapi.dev/api#-servercontrolserver) for more info).  Ahem can take care of this for you, if you simply provide the primary server as an argument.
 
 ```js
-// npm install ahem @hapi/hapi
+// npm install @hapipal/ahem @hapi/hapi
 const Hapi = require('@hapi/hapi');
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 const App = require('./app');
 
 (async () => {
@@ -118,9 +118,9 @@ const App = require('./app');
 Ahem can also be used as a plugin, e.g. for repeated "controlled" usage by the same server.  This style emphasizes the relationship between hapi's plugin registration with `server.register()` versus ahem's plugin instancing: the former has a major effect on `server` and the latter does not.  An equivalent way to write the above example using ahem as a plugin would look like this.
 
 ```js
-// npm install ahem @hapi/hapi
+// npm install @hapipal/ahem @hapi/hapi
 const Hapi = require('@hapi/hapi');
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 const App = require('./app');
 
 (async () => {
@@ -148,12 +148,12 @@ const App = require('./app');
 Schmervice recognizes hapi plugin instances as valid services, which means that you can register an instance created by ahem with schmervice without any friction.  Schmervice will use the name of the plugin (i.e. it's `name` attribute) as the service's name by default.  You can specify a different name using [`Schmervice.withName()`](https://github.com/hapipal/schmervice/blob/master/API.md#schmervicewithnamename-servicefactory) if desired.
 
 ```js
-// npm install ahem schmervice @hapi/hapi @hapi/vision handlebars
+// npm install @hapipal/ahem schmervice @hapi/hapi @hapi/vision handlebars
 const Hapi = require('@hapi/hapi');
 const Vision = require('@hapi/vision');
 const Handlebars = require('handlebars');
-const Schmervice = require('schmervice');
-const Ahem = require('ahem');
+const Schmervice = require('@hapipal/schmervice');
+const Ahem = require('@hapipal/ahem');
 
 // Before continuing, create a template:
 // mkdir templates && echo 'Hello, {{name}}!' > templates/hello.hbs
@@ -185,10 +185,10 @@ const Ahem = require('ahem');
 In hapi v17 hapi [dropped support](https://github.com/hapijs/hapi/issues/3572) for multiple connections.  Ahem offers a convenient way to reintroduce multiple connections to your project.  Below we demonstrate the use-case of redirecting HTTP to HTTPS in a single process using the `server` option to specify a port.  Note that this is another example of "controlled" usage similar to [this example](#instantiate-your-application-controlled-by-a-server) above.
 
 ```js
-// npm install ahem @hapi/hapi hapi-require-https
+// npm install @hapipal/ahem @hapi/hapi hapi-require-https
 const Fs = require('fs');
 const Hapi = require('@hapi/hapi');
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 const RequireHttps = require('hapi-require-https');
 const App = require('./app');
 
@@ -227,10 +227,10 @@ const App = require('./app');
 Ahem offers an additional style for wrapping hapi plugins into a library: you can turn a plugin into a factory for an instance using [`Ahem.toFactory(plugin)`](API.md#ahemtofactoryplugin).
 
 ```js
-// npm install ahem @hapi/hapi @hapi/vision handlebars
+// npm install @hapipal/ahem @hapi/hapi @hapi/vision handlebars
 const Vision = require('@hapi/vision');
 const Handlebars = require('handlebars');
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 
 // Before continuing, create a template:
 // mkdir templates && echo 'Hello, {{name}}!' > templates/hello.hbs
@@ -256,10 +256,10 @@ const Ahem = require('ahem');
 Ahem has a handful of other options that can be used too.  Check out the [API Reference](API.md) for more info.
 
 ```js
-// npm install ahem @hapi/hapi @hapi/vision handlebars
+// npm install @hapipal/ahem @hapi/hapi @hapi/vision handlebars
 const Vision = require('@hapi/vision');
 const Handlebars = require('handlebars');
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 
 // Before continuing, create a template:
 // mkdir templates && echo 'Hello, {{name}}!' > templates/hello.hbs

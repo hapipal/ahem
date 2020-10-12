@@ -25,10 +25,10 @@ Returns an instance of `plugin`, i.e. a [plugin-server](#plugin-server), where `
 #### Example
 
 ```js
-// npm install ahem @hapi/hapi @hapi/vision handlebars
+// npm install @hapipal/ahem @hapi/hapi @hapi/vision handlebars
 const Vision = require('@hapi/vision');
 const Handlebars = require('handlebars');
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 
 // Before continuing, create a template:
 // mkdir templates && echo 'Hello, {{name}}!' > templates/hello.hbs
@@ -55,7 +55,7 @@ Returns a function `async function([server], [options, [compose]])` identical in
 
 ```js
 // my-plugin.js
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 
 exports.plugin = {
     name: 'my-plugin',
@@ -102,9 +102,9 @@ Identical in behavior to [`Ahem.instance([server], plugin, [options, [compose]])
 ##### Example
 
 ```js
-// npm install ahem @hapi/hapi
+// npm install @hapipal/ahem @hapi/hapi
 const Hapi = require('@hapi/hapi');
-const Ahem = require('ahem');
+const Ahem = require('@hapipal/ahem');
 const App = require('./app');
 
 (async () => {

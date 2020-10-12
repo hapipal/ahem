@@ -16,7 +16,7 @@ describe('Ahem', () => {
 
     describe('instance()', () => {
 
-        // A little guide behavioral guide to ahem:
+        // A little behavioral guide to ahem:
         //
         // server    x controlled      = control-by:server  [and] register-to:new-server
         //                                                  [and] initialize:server, not by default

@@ -4,7 +4,7 @@ Utilities for treating hapi plugins as standalone libraries.
 
 > **Note**
 >
-> Ahem is intended for use with hapi v19+ and nodejs v12+.  Ensure you've installed @hapi/hapi within your project.
+> Ahem is intended for use with hapi v19+ and nodejs v12+ (_see v1 for lower support_).  Ensure you've installed @hapi/hapi within your project.
 
 ## `Ahem`
 ### `await Ahem.instance([server], plugin, [options, [compose]])`

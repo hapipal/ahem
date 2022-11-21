@@ -39,7 +39,7 @@
     "@hapi/hoek": "9.x.x"
   },
   "peerDependencies": {
-    "@hapi/hapi": ">=19 <21"
+    "@hapi/hapi": ">=19 <22"
   },
   "devDependencies": {
     "@hapi/code": "8.x.x",

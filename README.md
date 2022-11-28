@@ -1,7 +1,7 @@
 # ahem
 hapi plugins as libraries
 
-[![Build Status](https://app.travis-ci.com/hapipal/ahem.svg?branch=master)](https://app.travis-ci.com/hapipal/ahem) [![Coverage Status](https://coveralls.io/repos/hapipal/ahem/badge.svg?branch=master&service=github)](https://coveralls.io/github/hapipal/ahem?branch=master)
+[![Build Status](https://app.travis-ci.com/hapipal/ahem.svg?branch=main)](https://app.travis-ci.com/hapipal/ahem) [![Coverage Status](https://coveralls.io/repos/hapipal/ahem/badge.svg?branch=main&service=github)](https://coveralls.io/github/hapipal/ahem?branch=main)
 
 Lead Maintainer - [Devin Ivy](https://github.com/devinivy)
 
@@ -148,7 +148,7 @@ const App = require('./app');
 
 #### Treat vision as a service
 
-Schmervice recognizes hapi plugin instances as valid services, which means that you can register an instance created by ahem with schmervice without any friction.  Schmervice will use the name of the plugin (i.e. it's `name` attribute) as the service's name by default.  You can specify a different name using [`Schmervice.withName()`](https://github.com/hapipal/schmervice/blob/master/API.md#schmervicewithnamename-servicefactory) if desired.
+Schmervice recognizes hapi plugin instances as valid services, which means that you can register an instance created by ahem with schmervice without any friction.  Schmervice will use the name of the plugin (i.e. it's `name` attribute) as the service's name by default.  You can specify a different name using [`Schmervice.withName()`](https://github.com/hapipal/schmervice/blob/master/API.md#schmervicewithnamename-options-servicefactory) if desired.
 
 ```js
 // npm install @hapipal/ahem schmervice @hapi/hapi @hapi/vision handlebars

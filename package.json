@@ -36,15 +36,15 @@
   },
   "homepage": "https://github.com/hapipal/ahem#readme",
   "dependencies": {
-    "@hapi/hoek": "9.x.x"
+    "@hapi/hoek": "^9.0.0"
   },
   "peerDependencies": {
     "@hapi/hapi": ">=19 <22"
   },
   "devDependencies": {
-    "@hapi/code": "8.x.x",
-    "@hapi/hapi": "20.x.x",
-    "@hapi/lab": "24.x.x",
-    "coveralls": "3.x.x"
+    "@hapi/code": "^8.0.0",
+    "@hapi/hapi": "^20.0.0",
+    "@hapi/lab": "^24.0.0",
+    "coveralls": "^3.0.0"
   }
 }

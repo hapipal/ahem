@@ -13,7 +13,7 @@ npm install @hapipal/ahem
 ## Usage
 > See also the [API Reference](API.md)
 >
-> Ahem is intended for use with hapi v19+ and nodejs v12+ (_see v1 for lower support_).  Ensure you've installed @hapi/hapi within your project.
+> Ahem is intended for use with hapi v20+ and nodejs v16+ (_see v2 for lower support_).  Ensure you've installed @hapi/hapi within your project.
 
 Ahem's purpose is to encourage new possibilites for hapi plugin composition and portability.  It's a small tool that offers only subtly different functionality from [glue](https://github.com/hapijs/glue); but unlike glue, ahem's API is designed to strongly reinforce the perspective of hapi plugins as being instantiable general-purpose libraries, and not just web servers.
 

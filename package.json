@@ -35,9 +35,6 @@
     "url": "https://github.com/hapipal/ahem/issues"
   },
   "homepage": "https://github.com/hapipal/ahem#readme",
-  "dependencies": {
-    "@hapi/hoek": "^11.0.2"
-  },
   "peerDependencies": {
     "@hapi/hapi": ">=20 <22"
   },
